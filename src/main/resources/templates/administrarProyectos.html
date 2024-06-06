@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrar Proyectos</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">	
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+	<header class="container-fluid pt-1 pb-1 bg-warning d-flex justify-content-center ">
+		    <p class="text-light mb-0 p-2 fs-5">SPRING - Marlon Yesid Sánchez Moncada & Adrian Farid Hernandez Prince</p>
+		</header>
+		<nav class="navbar navbar-expand-lg navbar-dark p-3" id="menu">
+		    <div class="container">
+		        <a class="navbar-brand" href="#">
+		            <img th:src="@{/spring.png}" alt="#">
+					<img th:src="@{/add2.png}" class="plus" alt="#">
+					<img th:src="@{/java_logo_blanco.png}" alt="#">
+		            <span class="ml-2 fs-5 text-white fw-bold">SPRING FRAMEWORK</span>
+		        </a>
+		        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+		                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+		            <span class="navbar-toggler-icon"></span>
+		        </button>
+		        <div class="collapse navbar-collapse" id="navbarNav">
+		            <ul class="navbar-nav ml-auto">
+		                <!-- Agrega los elementos del menú aquí -->
+		            </ul>
+		        </div>
+		    </div>
+		</nav>
+    <div class="container">
+        <h1 class="mt-5">Administrar Proyectos</h1>
+        <button onclick="window.location.href='/coordinador'" class="btn btn-secondary mb-3">Volver</button>
+        <button id="addProjectButton" class="btn btn-primary mb-3">Agregar Proyecto</button>
+
+        <div class="mb-3 table-responsive">
+            <input type="text" id="searchCedula" class="form-control" placeholder="Buscar por cédula de estudiante">
+            <button id="searchButton" class="btn btn-info mt-2">Buscar Proyecto</button>
+        </div>
+
+        <table class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th>ID Proyecto</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>ID Estudiante</th>
+                    <th>ID Director</th>
+                    <th>ID Evaluador</th>
+                    <th>Calificación Director</th>
+                    <th>Descripción Calificación Director</th>
+                    <th>Calificación Evaluador</th>
+                    <th>Descripción Calificación Evaluador</th>
+                    <th>Archivo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody">
+                <!-- Los proyectos serán insertados aquí mediante JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para agregar/editar proyectos -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectModalLabel">Agregar Proyecto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="projectForm">
+                        <input type="hidden" id="projectId" name="id">
+                        <div class="form-group">
+                            <label for="titulo">Titulo</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion">Descripción</label>
+                            <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Aprobado">Aprobado</option>
+                                <option value="Rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="director">Director</label>
+                            <select class="form-control" id="director" name="director" required>
+                                <!-- Opciones de director se insertarán aquí -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="evaluador">Evaluador</label>
+                            <select class="form-control" id="evaluador" name="evaluador" required>
+                                <!-- Opciones de evaluador se insertarán aquí -->
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Cargar proyectos al cargar la página
+            loadProjects();
+
+            // Mostrar modal para agregar proyecto
+            $('#addProjectButton').click(function() {
+                $('#projectModalLabel').text('Agregar Proyecto');
+                $('#projectForm').trigger('reset');
+                $('#projectId').val('');
+                loadDirectorsAndEvaluators().then(() => {
+                    $('#projectModal').modal('show');
+                });
+            });
+
+            $('#projectForm').submit(function(event) {
+                event.preventDefault();
+                const id = $('#projectId').val();
+                const url = id ? `/coordinador/proyectos/${id}` : '/coordinador/proyectos';
+                const method = id ? 'PUT' : 'POST';
+                
+                const data = {
+                    titulo: $('#titulo').val(),
+                    descripcion: $('#descripcion').val(),
+                    estado: $('#estado').val(),
+                    director: { id: $('#director').val() },
+                    evaluador: { id: $('#evaluador').val() }
+                };
+
+                console.log("Submitting data:", data);
+
+                $.ajax({
+                    url: url,
+                    method: method,
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function() {
+                        $('#projectModal').modal('hide');
+                        loadProjects();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error:", status, error);
+                        console.error("Response Text:", xhr.responseText);
+                    }
+                });
+            });
+
+            // Cargar opciones de director y evaluador
+            loadDirectorsAndEvaluators();
+
+            // Buscar proyecto por cédula
+            $('#searchButton').click(function() {
+                const cedula = $('#searchCedula').val();
+                if (cedula) {
+                    searchProjectByCedula(cedula);
+                }
+            });
+        });
+
+        function loadDirectorsAndEvaluators() {
+            return new Promise((resolve, reject) => {
+                $.get('/coordinador/directores', function(directores) {
+                    const directorSelect = $('#director');
+                    directorSelect.empty();
+                    directores.forEach(director => {
+                        directorSelect.append(`<option value="${director.id}">${director.nombre}</option>`);
+                    });
+                }).fail(reject);
+
+                $.get('/coordinador/evaluadores', function(evaluadores) {
+                    const evaluadorSelect = $('#evaluador');
+                    evaluadorSelect.empty();
+                    evaluadores.forEach(evaluador => {
+                        evaluadorSelect.append(`<option value="${evaluador.id}">${evaluador.nombre}</option>`);
+                    });
+                }).fail(reject).done(resolve);
+            });
+        }
+
+        function loadProjects() {
+            $.get('/coordinador/proyectos', function(projects) {
+                const projectTableBody = $('#projectTableBody');
+                projectTableBody.empty();
+                projects.forEach(project => {
+                    const estudianteNombre = project.estudiante ? project.estudiante.nombre : 'N/A';
+                    const directorNombre = project.director ? project.director.nombre : 'N/A';
+                    const evaluadorNombre = project.evaluador ? project.evaluador.nombre : 'N/A';
+
+                    projectTableBody.append(`
+                        <tr>
+                            <td>${project.id}</td>
+                            <td>${project.titulo}</td>
+                            <td>${project.descripcion}</td>
+                            <td>${project.estado}</td>
+                            <td>${estudianteNombre}</td>
+                            <td>${directorNombre}</td>
+                            <td>${evaluadorNombre}</td>
+                            <td>${project.calificacionDirector || 'N/A'}</td>
+                            <td>${project.descripcionCalificacionDirector || 'N/A'}</td>
+                            <td>${project.calificacionEvaluador || 'N/A'}</td>
+                            <td>${project.descripcionCalificacionEvaluador || 'N/A'}</td>
+                            <td>${project.archivo || 'N/A'}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editProject(${project.id})">Editar</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteProject(${project.id})">Eliminar</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        function searchProjectByCedula(cedula) {
+            $.get(`/coordinador/proyectos/estudiante/${cedula}`, function(projects) {
+                const projectTableBody = $('#projectTableBody');
+                projectTableBody.empty();
+                if (projects.length === 0) {
+                    projectTableBody.append('<tr><td colspan="13" class="text-center">No se encontraron proyectos</td></tr>');
+                } else {
+                    projects.forEach(project => {
+                        const estudianteNombre = project.estudiante ? project.estudiante.nombre : 'N/A';
+                        const directorNombre = project.director ? project.director.nombre : 'N/A';
+                        const evaluadorNombre = project.evaluador ? project.evaluador.nombre : 'N/A';
+
+                        projectTableBody.append(`
+                            <tr>
+                                <td>${project.id}</td>
+                                <td>${project.titulo}</td>
+                                <td>${project.descripcion}</td>
+                                <td>${project.estado}</td>
+                                <td>${estudianteNombre}</td>
+                                <td>${directorNombre}</td>
+                                <td>${evaluadorNombre}</td>
+                                <td>${project.calificacionDirector || 'N/A'}</td>
+                                <td>${project.descripcionCalificacionDirector || 'N/A'}</td>
+                                <td>${project.calificacionEvaluador || 'N/A'}</td>
+                                <td>${project.descripcionCalificacionEvaluador || 'N/A'}</td>
+                                <td>${project.archivo || 'N/A'}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editProject(${project.id})">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteProject(${project.id})">Eliminar</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+            }).fail(function() {
+                const projectTableBody = $('#projectTableBody');
+                projectTableBody.empty();
+                projectTableBody.append('<tr><td colspan="13" class="text-center">Error al buscar proyectos</td></tr>');
+            });
+        }
+
+        function editProject(id) {
+            $.get(`/coordinador/proyectos/${id}`, function(project) {
+                $('#projectModalLabel').text('Editar Proyecto');
+                $('#projectId').val(project.id);
+                $('#titulo').val(project.titulo);
+                $('#descripcion').val(project.descripcion);
+                $('#estado').val(project.estado);
+
+                // Cargar directores y evaluadores antes de mostrar el modal
+                loadDirectorsAndEvaluators().then(() => {
+                    $('#director').val(project.director.id);
+                    $('#evaluador').val(project.evaluador.id);
+                    $('#projectModal').modal('show');
+                });
+            });
+        }
+
+        function deleteProject(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
+                $.ajax({
+                    url: `/coordinador/proyectos/${id}`,
+                    method: 'DELETE',
+                    success: function() {
+                        loadProjects();
+                    }
+                });
+            }
+        }
+    </script>
+
+	<footer class="bg-dark text-white mt-5 py-3">
+	    <div class="container d-flex justify-content-center justify-content-lg-between align-items-center flex-wrap">
+	        <p class="text-center text-lg-start flex-grow-1 mb-0">&copy; Adrian Farid Hernandez Prince & Marlon Yesid Sánchez Moncada - Derechos Reservados.</p>
+	        <div class="social-links d-flex justify-content-center justify-content-lg-end align-items-center">
+	            <a href="#"><img th:src="@{/facebook.png}" alt="Facebook" width="40px" height="40px"></a>
+	            <a href="#"><img th:src="@{/instagram.png}" alt="Instagram" width="40px" height="40px"></a>
+	            <a href="#"><img th:src="@{/twitter.png}" alt="Twitter" width="40px" height="40px"></a>
+	            <a href="#"><img th:src="@{/youtube.png}" alt="YouTube" width="40px" height="40px"></a>
+	        </div>
+	    </div>
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
