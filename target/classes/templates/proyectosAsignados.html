@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos Asignados</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">	
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <style>
+        body {
+            background-color: #ebebebcc;
+        }
+
+        h1 {
+            text-align: center;
+        }
+        .btn-custom {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            text-align: center;
+            color: #333;
+        }
+        .btn-custom img {
+            width: 170px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+	<header class="container-fluid pt-1 pb-1 bg-warning d-flex justify-content-center">
+		    <p class="text-light mb-0 p-2 fs-5">SPRING - Marlon Yesid Sánchez Moncada & Adrian Farid Hernandez Prince</p>
+		</header>
+		<nav class="navbar navbar-expand-lg navbar-dark p-3" id="menu">
+		    <div class="container">
+		        <a class="navbar-brand" href="#">
+		            <img th:src="@{/spring.png}" alt="#">
+					<img th:src="@{/add2.png}" class="plus" alt="#">
+					<img th:src="@{/java_logo_blanco.png}" alt="#">
+		            <span class="ml-2 fs-5 text-white fw-bold">SPRING FRAMEWORK</span>
+		        </a>
+		        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+		                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+		            <span class="navbar-toggler-icon"></span>
+		        </button>
+		        <div class="collapse navbar-collapse" id="navbarNav">
+		            <ul class="navbar-nav ml-auto">
+		                <!-- Agrega los elementos del menú aquí -->
+		            </ul>
+		        </div>
+		    </div>
+		</nav>
+    <div class="container mt-5">
+        <h1>Proyectos Asignados</h1>
+
+        <div class="row justify-content-center mt-5">
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img th:src="@{/admin.png}" alt="Proyecto 1" width="150" height="150">
+                        <h5 class="card-title mt-3">Proyecto 1</h5>
+                        <p class="card-text">Descripción del Proyecto 1.</p>
+                        <a href="#" class="btn btn-primary">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img th:src="@{/coordi.png}" alt="Proyecto 2" width="150" height="150">
+                        <h5 class="card-title mt-3">Proyecto 2</h5>
+                        <p class="card-text">Descripción del Proyecto 2.</p>
+                        <a href="#" class="btn btn-primary">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img th:src="@{/estudiante.png}" alt="Proyecto 3" width="150" height="150">
+                        <h5 class="card-title mt-3">Proyecto 3</h5>
+                        <p class="card-text">Descripción del Proyecto 3.</p>
+                        <a href="#" class="btn btn-primary">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+			<button onclick="window.location.href='/evaluador'" class="btn btn-secondary mb-3">Volver</button>
+        </div>
+    </div>
+
+	<footer class="bg-dark text-white mt-5 py-3">
+	    <div class="container d-flex justify-content-center justify-content-lg-between align-items-center flex-wrap">
+	        <p class="text-center text-lg-start flex-grow-1 mb-0">&copy; Adrian Farid Hernandez Prince & Marlon Yesid Sánchez Moncada - Derechos Reservados.</p>
+	        <div class="social-links d-flex justify-content-center justify-content-lg-end align-items-center">
+	            <a href="#"><img th:src="@{/facebook.png}" alt="Facebook" width="40px" height="40px"></a>
+	            <a href="#"><img th:src="@{/instagram.png}" alt="Instagram" width="40px" height="40px"></a>
+	            <a href="#"><img th:src="@{/twitter.png}" alt="Twitter" width="40px" height="40px"></a>
+	            <a href="#"><img th:src="@{/youtube.png}" alt="YouTube" width="40px" height="40px"></a>
+	        </div>
+	    </div>
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
